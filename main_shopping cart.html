@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shopping Cart - HAPPY DAIRY FARM</title>
+    <!-- Font Awesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Google Fonts Link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" href="https://placehold.co/32x32/8BC34A/FFFFFF?text=HDF" type="image/png">
+
+    <!-- CSS Styles -->
+    <style>
+        :root {
+            --main-color: #4CAF50;
+            --black: #13131a;
+            --border: .1rem solid rgba(255,255,255,.3);
+            --white: #fff;
+            --header-text-color: #3D403A;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            outline: none; border: none;
+            text-decoration: none;
+            text-transform: capitalize;
+            transition: all .2s linear;
+        }
+
+        html {
+            font-size: 62.5%;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-image: url('https://ruminants.ceva.pro/hubfs/iStock-491490408%20(1).webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        section {
+            padding: 2rem 7%;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 3rem;
+            font-size: 1.7rem;
+            color: var(--white);
+            background: var(--main-color);
+            cursor: pointer;
+            border-radius: 5rem;
+            text-align: center;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 7%;
+            border-bottom: 1px solid rgba(0,0,0,.1);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+        }
+        
+        .header .logo img {
+            height: 6rem;
+            border-radius: 50%;
+        }
+
+        .header .navbar a {
+            margin: 0 1.5rem;
+            font-size: 1.8rem;
+            color: var(--header-text-color);
+            font-weight: 600;
+            position: relative;
+            padding-bottom: .5rem;
+        }
+
+        .header .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: .2rem;
+            background-color: var(--main-color);
+            transition: width .3s ease;
+        }
+
+        .header .navbar a:hover::after,
+        .header .navbar a.active::after {
+            width: 100%;
+        }
+
+        .header .icons > * {
+            margin-left: 2.5rem;
+        }
+        
+        .header .icons .fas {
+            color: var(--header-text-color);
+            cursor: pointer;
+            font-size: 2.8rem;
+        }
+
+        .header .icons .cart-icon-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .header .cart-counter {
+            position: absolute;
+            top: -0.8rem;
+            right: -1.5rem;
+            background-color: #d32f2f;
+            color: white;
+            border-radius: 50%;
+            padding: 0.1rem 0.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1.8rem;
+            min-width: 2rem;
+            height: 2rem;
+            text-align: center;
+            border: 2px solid var(--white);
+        }
+
+        #menu-btn { display: none; }
+        
+        /* Cart Page Styles */
+        .cart-section {
+            padding: 12rem 7% 4rem;
+            display: flex;
+            gap: 3rem;
+            align-items: flex-start;
+            min-height: 60vh; /* Ensures footer is pushed down */
+        }
+
+        .cart-items {
+            flex: 2;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1);
+            border: 1px solid rgba(255,255,255,.3);
+        }
+
+        .cart-summary {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1);
+            position: sticky;
+            top: 12rem;
+            border: 1px solid rgba(255,255,255,.3);
+        }
+
+        .cart-heading {
+            font-size: 2.8rem;
+            color: var(--black);
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr 1.5fr 0.5fr;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item img {
+            width: 8rem;
+            height: 8rem;
+            object-fit: cover;
+            border-radius: .5rem;
+        }
+
+        .cart-item .item-details h3 {
+            font-size: 1.8rem;
+            color: var(--black);
+            margin-bottom: .5rem;
+        }
+
+        .cart-item .item-details p {
+            font-size: 1.5rem;
+            color: #666;
+        }
+
+        .cart-item .item-price {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .quantity-control .quantity-btn {
+            height: 3rem;
+            width: 3rem;
+            line-height: 3rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--main-color);
+            background: transparent;
+            border: .1rem solid var(--main-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .quantity-control .quantity {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .remove-btn {
+            font-size: 2.2rem;
+            color: #d32f2f;
+            cursor: pointer;
+            text-align: right;
+        }
+        
+        .remove-btn:hover {
+            opacity: 0.7;
+        }
+
+        .cart-summary h3 {
+            font-size: 2.4rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-row.total {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .empty-cart-message {
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .empty-cart-message i {
+            font-size: 8rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        .empty-cart-message h2 {
+            font-size: 2.5rem;
+            color: var(--black);
+            margin-bottom: 1rem;
+        }
+
+        .empty-cart-message p {
+            font-size: 1.6rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        /* Footer Styles */
+        .footer {
+            background: #212529; /* A professional dark grey */
+            color: #adb5bd; /* Softer text color */
+            padding: 5rem 7% 2rem 7%;
+        }
+
+        .footer .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+            gap: 3rem;
+        }
+
+        .footer .footer-col .logo img {
+            height: 7rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer .footer-col p {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            text-transform: none; /* Keep paragraphs normal case */
+        }
+
+        .footer .footer-col h4 {
+            font-size: 2rem;
+            color: var(--white);
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+        
+        .footer .footer-col h4::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1rem;
+            background-color: var(--main-color);
+            height: .2rem;
+            box-sizing: border-box;
+            width: 5rem;
+        }
+
+        .footer .footer-col ul {
+            list-style: none;
+        }
+
+        .footer .footer-col ul li a {
+            display: block;
+            font-size: 1.5rem;
+            color: #adb5bd;
+            margin-bottom: 1rem;
+            transition: all .3s ease;
+        }
+
+        .footer .footer-col ul li a:hover {
+            color: var(--main-color);
+            padding-left: .8rem;
+        }
+
+        .footer .footer-col .contact-info i {
+            color: var(--main-color);
+            margin-right: 1rem;
+        }
+
+        .footer .footer-col .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .footer .footer-col .newsletter-form input {
+            width: 100%;
+            padding: 1.2rem;
+            border-radius: .5rem;
+            background: #343a40;
+            color: var(--white);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .footer .footer-col .newsletter-form input:focus {
+            border-color: var(--main-color);
+        }
+
+        .footer .footer-col .newsletter-form .btn {
+            width: auto;
+            padding: 1rem 3rem;
+        }
+
+        .footer .footer-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: .1rem solid #343a40;
+            text-align: center;
+        }
+
+        .footer .footer-bottom .share {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer .footer-bottom .share a {
+            height: 4.5rem;
+            width: 4.5rem;
+            line-height: 4.5rem;
+            font-size: 2rem;
+            color: var(--white);
+            background-color: #343a40;
+            margin: 0 .3rem;
+            border-radius: 50%;
+        }
+        .footer .footer-bottom .share a:hover {
+            background: var(--main-color);
+            transform: translateY(-3px);
+        }
+        .footer .footer-bottom .credit {
+            font-size: 1.5rem;
+        }
+
+        .footer .footer-bottom .credit span {
+            color: var(--main-color);
+            font-weight: bold;
+        }
+        
+        /* Media Queries */
+        @media (max-width:991px) {
+            html { font-size: 55%; }
+            .header, section { padding-left: 2rem; padding-right: 2rem; }
+            .cart-section { flex-direction: column; }
+            .cart-summary { position: static; width: 100%; }
+        }
+        @media (max-width:768px) {
+            #menu-btn { display: inline-block; }
+            .header .navbar {
+                position: absolute; top: 100%; right: -100%;
+                background: var(--white); width: 30rem;
+                height: calc(100vh - 9.5rem);
+                box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1);
+            }
+            .header .navbar.active { right: 0; }
+            .header .navbar a {
+                display: block; margin: 1.5rem; padding: .5rem; font-size: 2rem;
+            }
+            .cart-item { grid-template-columns: 1fr 2fr 1fr; grid-template-rows: auto auto; }
+            .cart-item .remove-btn { grid-column: 3; grid-row: 1; }
+            .cart-item .quantity-control { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; margin-top: 1rem; }
+
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <a href="./main_index.html" class="logo">
+            <img src="https://placehold.co/100x100/8BC34A/FFFFFF?text=HDF" alt="Happy Dairy Farm Logo">
+        </a>
+        <nav class="navbar">
+            <a href="./main_index.html">Home</a>
+            <a href="./main_index.html">About</a>
+            <a href="./main_products_page.html">Products</a>
+            <a href="./main_gallary.html">Gallery</a>
+            <a href="#">Certifications</a>
+            <a href="./main_index.html#contact">Contact</a>
+        </nav>
+        <div class="icons">
+            <div class="cart-icon-container">
+                <a href="./main_shopping cart.html" class="fas fa-shopping-cart"></a>
+                <span id="cart-counter" class="cart-counter hidden">0</span>
+            </div>
+            <div class="fas fa-bars" id="menu-btn"></div>
+        </div>
+    </header>
+
+    <!-- Cart Section -->
+    <section class="cart-section">
+        <div class="cart-items" id="cart-items-container">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+        <div class="cart-summary" id="cart-summary-container">
+            <!-- Summary will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <section class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="./main_index.html" class="logo">
+                    <img src="https://placehold.co/100x100/8BC34A/FFFFFF?text=HDF" alt="Happy Dairy Farm Logo">
+                </a>
+                <p>Delivering farm-fresh dairy products with a commitment to quality, sustainability, and the happiness of our community.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="./main_index.html#about">About Us</a></li>
+                    <li><a href="./main_products_page.html">Our Products</a></li>
+                    <li><a href="./main_gallary.html">Gallery</a></li>
+                    <li><a href="#">Certifications</a></li>
+                    <li><a href="./main_index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <p class="contact-info"><i class="fas fa-map-marker-alt"></i> 123 Dairy Lane, New Delhi, India</p>
+                <p class="contact-info"><i class="fas fa-phone"></i> +91 987 654 3210</p>
+                <p class="contact-info"><i class="fas fa-envelope"></i> contact@happydairy.com</p>
+            </div>
+            <div class="footer-col">
+                <h4>Newsletter</h4>
+                <p>Subscribe for the latest updates and offers.</p>
+                <form action="#" class="newsletter-form">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit" class="btn">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="share">
+                <a href="#" class="fab fa-facebook-f"></a>
+                <a href="#" class="fab fa-twitter"></a>
+                <a href="#" class="fab fa-instagram"></a>
+                <a href="#" class="fab fa-linkedin"></a>
+            </div>
+            <div class="credit">created by <span>anshu yadav</span> | all rights reserved</div>
+        </div>
+    </section>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartCounter = document.getElementById('cart-counter');
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const cartSummaryContainer = document.getElementById('cart-summary-container');
+            
+            function getCart() {
+                return JSON.parse(localStorage.getItem('cart')) || [];
+            }
+
+            function saveCart(cart) {
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCounter();
+                renderCart();
+            }
+
+            function updateCartCounter() {
+                const cart = getCart();
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                if (totalItems > 0) {
+                    cartCounter.textContent = totalItems;
+                    cartCounter.classList.remove('hidden');
+                } else {
+                    cartCounter.classList.add('hidden');
+                }
+            }
+            
+            function renderCart() {
+                const cart = getCart();
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = `
+                        <div class="empty-cart-message">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h2>Your cart is empty</h2>
+                            <p>Looks like you haven't added anything to your cart yet.</p>
+                            <a href="./main_products_page.html" class="btn">Start Shopping</a>
+                        </div>`;
+                    cartSummaryContainer.innerHTML = '';
+                    return;
+                }
+
+                let itemsHTML = '<h2 class="cart-heading">Your Cart</h2>';
+                let subtotal = 0;
+
+                cart.forEach(item => {
+                    itemsHTML += `
+                        <div class="cart-item" data-name="${item.name}">
+                            <img src="${item.image}" alt="${item.name}">
+                            <div class="item-details">
+                                <h3>${item.name}</h3>
+                                <p>Price: Rs. ${item.price.toFixed(2)}</p>
+                            </div>
+                            <p class="item-price">Rs. ${(item.price * item.quantity).toFixed(2)}</p>
+                            <div class="quantity-control">
+                                <button class="quantity-btn minus-btn" aria-label="Decrease quantity">-</button>
+                                <span class="quantity">${item.quantity}</span>
+                                <button class="quantity-btn plus-btn" aria-label="Increase quantity">+</button>
+                            </div>
+                            <i class="fas fa-times remove-btn" title="Remove item"></i>
+                        </div>`;
+                    subtotal += item.price * item.quantity;
+                });
+                cartItemsContainer.innerHTML = itemsHTML;
+
+                // Render Summary
+                const deliveryCharge = 40.00;
+                const total = subtotal + deliveryCharge;
+                cartSummaryContainer.innerHTML = `
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>Rs. ${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Charge</span>
+                        <span>Rs. ${deliveryCharge.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>Rs. ${total.toFixed(2)}</span>
+                    </div>
+                    <a href="#" class="btn" style="width: 100%; margin-top: 2rem;">Proceed to Checkout</a>`;
+            }
+
+            function handleCartAction(event) {
+                const target = event.target;
+                const itemElement = target.closest('.cart-item');
+                if (!itemElement) return;
+
+                const itemName = itemElement.dataset.name;
+                let cart = getCart();
+                let itemInCart = cart.find(item => item.name === itemName);
+
+                if (!itemInCart) return;
+
+                if (target.classList.contains('plus-btn')) {
+                    itemInCart.quantity++;
+                } else if (target.classList.contains('minus-btn')) {
+                    itemInCart.quantity--;
+                } else if (target.classList.contains('remove-btn')) {
+                    itemInCart.quantity = 0;
+                }
+                
+                cart = cart.filter(item => item.quantity > 0);
+                saveCart(cart);
+            }
+
+            cartItemsContainer.addEventListener('click', handleCartAction);
+            
+            // Initial render
+            updateCartCounter();
+            renderCart();
+        });
+
+        // --- MOBILE MENU SCRIPT ---
+        let navbar = document.querySelector('.navbar');
+        document.querySelector('#menu-btn').onclick = () => {
+            navbar.classList.toggle('active');
+        }
+        window.onscroll = () => {
+            navbar.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
+
